@@ -91,6 +91,4 @@ The schema is in [`server/schema.sql`](server/schema.sql), with reproducible sam
 
 The SQLite database seeds when the service starts. For this assignment demo, Render's ephemeral filesystem is sufficient; a production service would move the data layer to managed PostgreSQL.
 
-## Recording
-
-Use [DEMO_SCRIPT.md](DEMO_SCRIPT.md) to record the requested 2–5 minute walkthrough. The script deliberately covers the UI, API, and database evidence the brief asks reviewers to see.
+1
