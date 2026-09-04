@@ -1,15 +1,15 @@
 # 1Fi Marketplace
 
-A polished full-stack marketplace for purchasing premium electronics using flexible, mutual-fund-backed EMI plans. This implementation follows the supplied PDF brief: dynamic product data, unique product URLs, variant selection, selectable EMI plans, API endpoints, and a database schema with seed data.
+A polished 1Fi Marketplace feature that extends the Shop experience. The Shop entry point includes Top Brands, Nearby Stores, and 1Fi Marketplace; Marketplace provides dynamic product details, variants, selectable EMI plans, and a checkout confirmation flow.
 
 ## Highlights
 
 - Responsive React product experience with a premium 1Fi-inspired visual language
 - Three seeded products, each with three purchasable variants
 - EMI plan selection, recommended-plan treatment, cashback, interest, and live monthly-payment recalculation per variant
-- Unique product routes: `/products/iphone-17-pro`, `/products/galaxy-s24-ultra`, and `/products/macbook-air-m4`
+- Shop entry point at `/shop`, intentionally blank Top Brands and Nearby Stores screens, and Marketplace at `/shop/marketplace`
 - Express API backed by SQLite (Node's built-in `node:sqlite`), with no catalog or plan data hardcoded in the frontend
-- Production configuration for Render, plus a concise recording guide in [DEMO_SCRIPT.md](DEMO_SCRIPT.md)
+- Production configuration for Render
 
 ## Stack
 
@@ -29,7 +29,7 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:5173/products/iphone-17-pro`. Vite proxies API requests to the Express server at port 3001.
+Open `http://localhost:5173/shop`. Vite proxies API requests to the Express server at port 3001.
 
 For a production-like run:
 
@@ -38,7 +38,7 @@ npm run build
 npm start
 ```
 
-Open `http://localhost:3001/products/iphone-17-pro`.
+Open `http://localhost:3001/shop`.
 
 ## API
 
@@ -87,7 +87,7 @@ The schema is in [`server/schema.sql`](server/schema.sql), with reproducible sam
 1. Push this repository to GitHub.
 2. In Render, choose **New +** → **Blueprint** and select the repository.
 3. Render discovers [`render.yaml`](render.yaml), installs dependencies, builds the React bundle, and serves it through Express.
-4. Use the generated `https://<service>.onrender.com/products/iphone-17-pro` as the submission demo URL.
+4. Use the generated `https://<service>.onrender.com/shop` as the submission demo URL.
 
 The SQLite database seeds when the service starts. For this assignment demo, Render's ephemeral filesystem is sufficient; a production service would move the data layer to managed PostgreSQL.
 

@@ -19,15 +19,25 @@ function ProductCard({ product, active, onClick }) {
   </button>;
 }
 
+function Shop({ mode }) {
+  const go = (path) => window.location.assign(path);
+  const isEmpty = mode === 'top-brands' || mode === 'nearby-stores';
+  if (isEmpty) return <main className="shop-shell"><header className="shop-header"><a className="shop-logo" href="/shop"><span>1</span>1Fi</a><p>Shop</p></header><section className="shop-empty"><button className="back-link" onClick={() => go('/shop')}>&lt; Shop</button><div className="empty-icon">{mode === 'top-brands' ? 'TB' : 'NS'}</div><h1>{mode === 'top-brands' ? 'Top Brands' : 'Nearby Stores'}</h1><p>This section is intentionally kept blank for the assignment.</p></section><nav className="bottom-nav"><button className="active">Home</button><button>Explore</button><button>Shop</button><button>Profile</button></nav></main>;
+  return <main className="shop-shell"><header className="shop-header"><a className="shop-logo" href="/shop"><span>1</span>1Fi</a><p>Shop</p></header><section className="shop-hero"><p>SHOP WITH 1FI</p><h1>Find more ways to make your money work for you.</h1><span>Curated rewards, local offers, and flexible ways to own what you love.</span></section><section className="shop-options"><p className="section-label">EXPLORE SHOP</p><button className="shop-option" onClick={() => go('/shop/top-brands')}><i className="option-icon brands">T</i><span><strong>Top Brands</strong><small>Offers from brands you love</small></span><Icon name="chevron" /></button><button className="shop-option" onClick={() => go('/shop/nearby-stores')}><i className="option-icon nearby">N</i><span><strong>Nearby Stores</strong><small>Discover offers around you</small></span><Icon name="chevron" /></button><button className="shop-option marketplace-option" onClick={() => go('/shop/marketplace')}><i className="option-icon market">1</i><span><strong>1Fi Marketplace</strong><small>Own more. Invest as you pay.</small></span><Icon name="chevron" /></button></section><nav className="bottom-nav"><button>Home</button><button>Explore</button><button className="active">Shop</button><button>Profile</button></nav></main>;
+}
+
 function Checkout({ product, variant, plan, monthly, onComplete }) {
   const [confirmed, setConfirmed] = useState(false);
-  return <main className="checkout-page"><header className="topbar"><a className="brand" href={`/products/${product.slug}`}><span className="logo-mark">1</span><span>1Fi <b>Marketplace</b></span></a><div className="secure"><Icon name="shield" size={17} /> Secure checkout</div></header><section className="checkout-content"><a className="back-link" href={`/products/${product.slug}`}>&lt; Back to product</a><div className="checkout-grid"><div className="checkout-confirmation"><span className="success-icon"><Icon name="check" size={29} /></span><p className="eyebrow">READY TO GO</p><h1>Your plan is reserved.</h1><p>One final secure step and <b>{product.name}</b> is yours.</p><div className="checkout-product"><img src={variant.image_url || product.image_url} alt="" /><div><small>{variant.color_name} - {variant.label}</small><strong>{product.name}</strong><span>{money(variant.price)}</span></div></div></div><aside className="order-summary"><p className="eyebrow">ORDER SUMMARY</p><h2>Flexible payments</h2><div className="summary-row"><span>Monthly payment</span><strong>{money(monthly)} <small>/ month</small></strong></div><div className="summary-row"><span>Tenure</span><strong>{plan.tenure_months} months</strong></div><div className="summary-row"><span>Interest</span><strong>{plan.interest_rate === 0 ? '0% - no cost' : `${plan.interest_rate}% p.a.`}</strong></div>{plan.cashback > 0 && <div className="summary-cashback">You will get {money(plan.cashback)} cashback</div>}<button className="complete-order" onClick={() => { setConfirmed(true); onComplete(); }}>{confirmed ? <>Order confirmed <Icon name="check" /></> : <>Confirm & continue <Icon name="arrow" /></>}</button></aside></div></section></main>;
+  return <main className="checkout-page"><header className="topbar"><a className="brand" href={`/shop/marketplace?product=${product.slug}`}><span className="logo-mark">1</span><span>1Fi <b>Marketplace</b></span></a><div className="secure"><Icon name="shield" size={17} /> Secure checkout</div></header><section className="checkout-content"><a className="back-link" href={`/shop/marketplace?product=${product.slug}`}>&lt; Back to product</a><div className="checkout-grid"><div className="checkout-confirmation"><span className="success-icon"><Icon name="check" size={29} /></span><p className="eyebrow">READY TO GO</p><h1>Your plan is reserved.</h1><p>One final secure step and <b>{product.name}</b> is yours.</p><div className="checkout-product"><img src={variant.image_url || product.image_url} alt="" /><div><small>{variant.color_name} - {variant.label}</small><strong>{product.name}</strong><span>{money(variant.price)}</span></div></div></div><aside className="order-summary"><p className="eyebrow">ORDER SUMMARY</p><h2>Flexible payments</h2><div className="summary-row"><span>Monthly payment</span><strong>{money(monthly)} <small>/ month</small></strong></div><div className="summary-row"><span>Tenure</span><strong>{plan.tenure_months} months</strong></div><div className="summary-row"><span>Interest</span><strong>{plan.interest_rate === 0 ? '0% - no cost' : `${plan.interest_rate}% p.a.`}</strong></div>{plan.cashback > 0 && <div className="summary-cashback">You will get {money(plan.cashback)} cashback</div>}<button className="complete-order" onClick={() => { setConfirmed(true); onComplete(); }}>{confirmed ? <>Order confirmed <Icon name="check" /></> : <>Confirm & continue <Icon name="arrow" /></>}</button></aside></div></section></main>;
 }
 
 function App() {
   const search = new URLSearchParams(location.search);
   const isCheckout = location.pathname === '/checkout';
-  const initialSlug = isCheckout ? search.get('product') || 'iphone-17-pro' : location.pathname.match(/^\/products\/([^/]+)/)?.[1] || 'iphone-17-pro';
+  const shopMode = location.pathname.match(/^\/shop(?:\/(top-brands|nearby-stores))?$/)?.[1] || (location.pathname === '/shop' || location.pathname === '/' ? 'home' : null);
+  const isShop = Boolean(shopMode);
+  const isMarketplace = location.pathname === '/shop/marketplace';
+  const initialSlug = isCheckout ? search.get('product') || 'iphone-17-pro' : isMarketplace ? search.get('product') || 'iphone-17-pro' : location.pathname.match(/^\/products\/([^/]+)/)?.[1] || 'iphone-17-pro';
   const [products, setProducts] = useState([]);
   const [slug, setSlug] = useState(initialSlug);
   const [product, setProduct] = useState(null);
@@ -42,15 +52,16 @@ function App() {
   }, [slug]);
   const variant = product?.variants[variantIndex];
   const selectedPlan = product?.emiPlans.find(p => p.id === planId);
-  const selectProduct = (next) => { history.pushState({}, '', `/products/${next.slug}`); setSlug(next.slug); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+  const selectProduct = (next) => { history.pushState({}, '', `/shop/marketplace?product=${next.slug}`); setSlug(next.slug); window.scrollTo({ top: 0, behavior: 'smooth' }); };
   const planMonthly = useMemo(() => selectedPlan && variant ? Math.round(selectedPlan.monthly_payment * variant.price / product.variants[0].price) : 0, [selectedPlan, variant, product]);
 
-  if (!product) return <main className="loading"><div className="logo-mark">1</div><p>Curating your marketplace?</p></main>;
+  if (isShop) return <Shop mode={shopMode} />;
+  if (!product) return <main className="loading"><div className="logo-mark">1</div><p>Curating your marketplace...</p></main>;
   if (isCheckout) return <Checkout product={product} variant={variant} plan={selectedPlan} monthly={planMonthly} onComplete={() => setNotice('Order confirmed! In a production flow, you would now complete KYC and payment authorization.')} />;
   return <main>
-    <header className="topbar"><a className="brand" href="/products/iphone-17-pro"><span className="logo-mark">1</span><span>1Fi <b>Marketplace</b></span></a><div className="secure"><Icon name="shield" size={17} /> Secure checkout</div></header>
+    <header className="topbar"><a className="brand" href="/shop"><span className="logo-mark">1</span><span>1Fi <b>Marketplace</b></span></a><div className="secure"><Icon name="shield" size={17} /> Secure checkout</div></header>
     <section className="catalog-strip"><div><p className="eyebrow">THE 1FI STORE</p><h2>What are you investing in?</h2></div><div className="product-rail">{products.map(p => <ProductCard key={p.id} product={p} active={p.slug === slug} onClick={() => selectProduct(p)} />)}</div></section>
-    <section className="breadcrumb"><button onClick={() => selectProduct(products[0] || { slug: 'iphone-17-pro' })}><Icon name="back" size={16} /> All products</button><span>/</span><span>{product.category}</span><span>/</span><b>{product.name}</b></section>
+    <section className="breadcrumb"><button onClick={() => window.location.assign('/shop')}><Icon name="back" size={16} /> All products</button><span>/</span><span>{product.category}</span><span>/</span><b>{product.name}</b></section>
     <section className="product-layout">
       <div className="visual-panel" style={{ '--accent': product.accent }}><span className="badge">{product.badge}</span><img src={variant?.image_url || product.image_url} alt={`${product.name} in ${variant?.color_name}`} /><div className="visual-orb one" /><div className="visual-orb two" /><p>Images are illustrative</p></div>
       <div className="details-panel">
