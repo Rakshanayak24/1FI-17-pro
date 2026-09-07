@@ -82,13 +82,4 @@ The schema is in [`server/schema.sql`](server/schema.sql), with reproducible sam
 
 `products` is the parent table. `variants` and `emi_plans` each reference `products.id`, enabling every product to have its own finishes/configurations and repayment options. On first server run, `server/index.js` creates `server/marketplace.db` and applies both files automatically. The generated database is intentionally gitignored; schema and seed data are versioned for reproducibility.
 
-## Deploy to Render
 
-1. Push this repository to GitHub.
-2. In Render, choose **New +** → **Blueprint** and select the repository.
-3. Render discovers [`render.yaml`](render.yaml), installs dependencies, builds the React bundle, and serves it through Express.
-4. Use the generated `https://<service>.onrender.com/shop` as the submission demo URL.
-
-The SQLite database seeds when the service starts. For this assignment demo, Render's ephemeral filesystem is sufficient; a production service would move the data layer to managed PostgreSQL.
-
-1
